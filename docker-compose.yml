@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  db:
+    # MySQLのDockerfileをビルドする
+    build:
+      # ビルドコンテキストはカレントディレクトリ
+      context: ./containers/mysql   # Dockerfileがあるディレクトリまでの相対パス
+      dockerfile: Dockerfile   # Dockerfileのファイル名
+    container_name: ${COMPOSE_PROJECT_NAME}_mysql
+    # M1チップでも動くように
+    # Intel Macの場合あってもなくても動く
+    platform: linux/x86_64
+    # DBのボリュームを指定
+    # ローカルの/data/dbをコンテナの/var/lib/mysqlにマウントする
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./containers/mysql:/docker-entrypoint-initdb.d
+    # 環境変数を.envを使って設定
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABSE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+  # サービス名
+  django:
+    build:
+      context: ./containers/django    # Dockerfileがあるディレクトリまでの相対パス
+      dockerfile: Dockerfile   # Dockerfileのファイル名
+    env_file:
+      - .env
+    # 作成するコンテナ名の指定
+    container_name: ${COMPOSE_PROJECT_NAME}_web
+    # 使用するポートの設定
+    ports:
+      - "8000:8000"
+    # 対話的なセッションやコマンドラインの操作を許可する
+    tty: true
+    volumes:
+      # ローカルの作業ディレクトリと仮想環境の作業ディレクトリの対応づけ
+      - ${SRC_PATH}:/root/workspace
+    depends_on:
+      - db
+
+volumes:
+  db_data:
