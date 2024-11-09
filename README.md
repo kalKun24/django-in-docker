@@ -105,3 +105,11 @@ USE_I18N = True
 
 USE_TZ = True
 ```
+
+
+6. staticフォルダの指定
+```
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+```
