@@ -4,3 +4,5 @@ markdown
 django-filter
 djangorestframework
 django-debug-toolbar
+django-bootstrap5
+Pygments
