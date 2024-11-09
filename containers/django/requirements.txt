@@ -5,4 +5,5 @@ django-filter
 djangorestframework
 django-debug-toolbar
 django-bootstrap5
-Pygments
+django-pygments-renderer
+pygments
